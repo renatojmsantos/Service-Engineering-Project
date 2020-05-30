@@ -58,7 +58,7 @@ class Watch extends React.Component {
 }
 
 
-class Page extends React.Component {
+class LoginPage extends React.Component {
     constructor(props) {
         super(props);
         this.state = {token : undefined, errormessage : undefined };
@@ -122,4 +122,4 @@ class Page extends React.Component {
     }
 }
 
-export default Page;
+export default LoginPage;
