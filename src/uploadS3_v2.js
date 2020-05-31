@@ -13,7 +13,7 @@ const config = {
 }
 
 class Home extends Component {
-    constructor(){
+    constructor(){ 
         super();
     }
 

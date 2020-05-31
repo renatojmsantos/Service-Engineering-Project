@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import ReactDom from 'react-dom';
+import App from './App'
 
 class Login extends React.Component {
     constructor(props) {
@@ -114,10 +115,13 @@ class LoginPage extends React.Component {
             )
         else
             return (
+                <App recordAudio={this.props.recordAudio} token={this.state.token}/>
+                /*
                 <div>
                     {errormessage}
                     <Watch timeserver={this.props.timeserver} token={this.state.token}/>
                 </div>
+                */
             )
     }
 }
