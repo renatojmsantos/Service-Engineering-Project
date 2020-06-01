@@ -14,9 +14,7 @@ class TranscribeData extends React.Component {
         const data = await response.json();
         console.log(data);
         this.setState({ body: data.body })
-
     }    
-
 
     render() {
         return (

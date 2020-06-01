@@ -9,7 +9,7 @@ class AddressSuggest extends Component {
           label="Endereço"
           value={this.props.query}
           onChange={this.props.onChange}
-          placeholder="start typing" />
+          placeholder="digite o destino" />
     );
   }
 }

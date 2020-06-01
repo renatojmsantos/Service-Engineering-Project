@@ -7,8 +7,13 @@ import ReactDom from 'react-dom';
 import {Redirect} from 'react-router-dom';
 import AddressItem from './AddressItem';
 import AddressForm from './AddressForm';
+import TranscribeFetch from './getTranscribeStatus';
 
 const Mp3Recorder = new MicRecorder({ bitRate: 128 });
+
+const sleep = (milliseconds) => {
+  return new Promise(resolve => setTimeout(resolve, milliseconds))
+}
 
 var bucketName = "proj-es-s3/Voice";
 var bucketRegion = "us-east-1";
@@ -91,7 +96,7 @@ class App extends React.Component {
     console.log(audio)
     var fileName = "audio.mp3";
     if(!audio.size) {
-      return alert("No File to upload !!");
+      return alert("No File to upload!");
     }
     
     var upload = new AWS.S3.ManagedUpload({
@@ -106,7 +111,10 @@ class App extends React.Component {
 
     promise.then(
       function(data) {
-        alert("Audio inserido na Storage");
+        sleep(3000).then(() => {
+          alert("Audio inserido para Transcriçao");
+          window.location.reload(false);  
+        })              
       },
       function(err) {
         return alert("ERROR: ", err.message);
@@ -131,18 +139,24 @@ class App extends React.Component {
   state = { Redirect: null };
 */
   render(){
+    //<audio src={this.state.blobURL} controls="controls" />
     if(this.state.Redirect){
       return <Redirect to={this.state.Redirect} />
     }
     return (
       <div className="App">
+         {this.props.callApi}
         <header className="App-header">
           <button onClick={this.start} disabled={this.state.isRecording}>Record</button>
           <button onClick={this.stop} disabled={!this.state.isRecording}>Stop</button>
-          <audio src={this.state.blobURL} controls="controls" />
           
+          <h3>
+            Resuts:
+            <TranscribeFetch />
+          </h3>
+
           <SearchLocationPage pesq = {this.state.showSearchLocation}/>
-        <button onClick={this.goSearch}> {this.state.showSearchLocation}Pesquisar enderecos!</button>
+          <button onClick={this.goSearch}> {this.state.showSearchLocation}Pesquisar endereco!</button>
 
         </header>
       </div>
