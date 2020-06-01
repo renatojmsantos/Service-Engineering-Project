@@ -30,6 +30,10 @@ class SearchLocation extends React.Component {
         )
     }
     */
+   constructor(props) {
+        super(props);
+        
+    }
 } 
 
 export default SearchLocation;
