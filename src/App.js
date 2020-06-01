@@ -5,10 +5,10 @@ import AWS from 'aws-sdk';
 import SearchLocation from './SearchLocation';
 import ReactDom from 'react-dom';
 import {Redirect} from 'react-router-dom';
-
+import AddressItem from './AddressItem';
+import AddressForm from './AddressForm';
 
 const Mp3Recorder = new MicRecorder({ bitRate: 128 });
-
 
 var bucketName = "proj-es-s3/Voice";
 var bucketRegion = "us-east-1";
@@ -21,7 +21,6 @@ AWS.config.update({
   })
 });
 
-
 var s3 = new AWS.S3({
   apiVersion: "2006-03-01",
   params: { Bucket: bucketName }
@@ -31,10 +30,10 @@ function SearchLocationPage(props) {
   if (!props.pesq) {
     return null;
   }
-
   return (
-    <div className="searching">
-      Endereços
+    <div className="container">
+      Insira o seu destino...
+      <AddressForm/>
     </div>
   );
 }
@@ -151,68 +150,5 @@ class App extends React.Component {
   }
  
 }
-
-class AddressForm extends Component {
-  constructor(props) {
-    super(props);
-
-    const address = this.getEmptyAddress();
-    this.state = {
-      'address': address,
-      'query': '',
-      'locationId': ''
-    }
-
-    this.onQuery = this.onQuery.bind(this);
-  }
-
-  onQuery(evt) {
-    const query = evt.target.value;
-    if (!query.length > 0) {
-      const address = this.getEmptyAddress();
-      return this.setState({
-        'address': address,
-        'query': '',
-        'locationId': ''
-        })
-    }
-
-    const self = this;
-    axios.get('https://autocomplete.geocoder.api.here.com/6.2/geocode.json', {
-      'params': {
-        'app_id': 'devportal-demo-20180625',
-        'app_code': '9v2BkviRwi9Ot26kp2IysQ',
-        'query': query,
-        'maxresults': 1,
-      }}).then(function (response) {
-        const address = response.data.suggestions[0].address;
-        const id = response.data.suggestions[0].locationId;
-        self.setState({
-          'address': address,
-          'query': query,
-          'locationId': id,
-          });
-      });
-  }
-
-  render() {
-    return (
-      <div class="container">
-        <AddressSuggest
-          query={this.state.query}
-          onChange={this.onQuery}
-          />
-        <AddressInput
-          street={this.state.address.street}
-          city={this.state.address.city}
-          state={this.state.address.state}
-          postalCode={this.state.address.postalCode}
-          country={this.state.address.country}
-          />
-        ></div>
-      );
-  }
-}
-
 
 export default App;
