@@ -7,9 +7,10 @@ class AddressSuggest extends Component {
     return (
         <AddressItem
           label="Endereço"
-          value={this.props.query}
+          placeholder="digite o destino"
+          value={this.props.search}
           onChange={this.props.onChange}
-          placeholder="digite o destino" />
+        />
     );
   }
 }

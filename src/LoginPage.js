@@ -6,7 +6,6 @@ class Login extends React.Component {
     constructor(props) {
         super(props);
         this.state = {login : '', password : ''}
-
         this.handleLoginChange = this.changeLogin.bind(this);
         this.handlePasswordChange = this.changePassword.bind(this);
     }
@@ -21,7 +20,9 @@ class Login extends React.Component {
 
     render () {
         return (
-            <form>
+           
+            <form align="center">
+                <h1>ES - Project #2</h1>
                 Login <input type="text" value={this.state.login} onChange={this.handleLoginChange}/> <br/>
                 Password <input type="password" value={this.state.password} onChange={this.handlePasswordChange}/> <br/>
                 <input type="button" value="submit" onClick={this.props.login.bind(this.props.parent, this.state.login, this.state.password)}/>
@@ -29,35 +30,6 @@ class Login extends React.Component {
         )
     }
 }
-
-
-class Watch extends React.Component {
-    constructor(props) {
-        super(props);
-        this.state = {date : ''};
-    }
-
-    componentWillMount() {
-        var theobject = this
-        console.log('this =', this)
-        console.log('this.props =', this.props)
-  fetch(this.props.timeserver, {
-            headers:{
-              'authorizationToken' : JSON.stringify({ 'token' : this.props.token })
-            }
-        }).then(data => data.json())
-          .then(thedate => theobject.setState({date : thedate}))
-    .catch(function(error) {
-            console.log('There has been a problem with your fetch operation: ', error.message);
-           });
-    }
-
-    render() {
-        console.log('date =', this.state.date)
-        return <h2>{this.state.date}</h2>
-    }
-}
-
 
 class LoginPage extends React.Component {
     constructor(props) {
@@ -76,7 +48,7 @@ class LoginPage extends React.Component {
     doLogin(login, password) {
         var theobject = this
         var formparameters = {
-            method: 'POST', // or 'PUT'
+            method: 'POST', //para nao ficar visivel
             body: JSON.stringify({'login' : login, 'password' : password}),
             headers:{
               'Content-Type': 'application/json'
@@ -108,20 +80,14 @@ class LoginPage extends React.Component {
             var errormessage = <div/>
         if (this.state.token == undefined)
             return (
-                <div>
+                <div> 
                     {errormessage}
                     <Login parent={this} login={this.doLogin}/>
                 </div>
             )
         else
             return (
-                <App recordAudio={this.props.recordAudio} token={this.state.token}/>
-                /*
-                <div>
-                    {errormessage}
-                    <Watch timeserver={this.props.timeserver} token={this.state.token}/>
-                </div>
-                */
+                <App/>
             )
     }
 }

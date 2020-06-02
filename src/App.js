@@ -89,6 +89,12 @@ class App extends React.Component {
         this.setState({ isBlocked: true })
       },
     );
+
+    navigator.geolocation.getCurrentPosition(function(position) {
+      console.log("Latitude is :", position.coords.latitude);
+      console.log("Longitude is :", position.coords.longitude);
+    });
+
   }
 
   addAudio = (audio) => {
@@ -110,9 +116,9 @@ class App extends React.Component {
 
     promise.then(
       function(data) {
-        sleep(1000).then(() => {
+        sleep(50).then(() => {
           alert("Audio inserido para Transcriçao");
-          window.location.reload(false);  
+          //window.location.reload(false);  
         })              
       },
       function(err) {
@@ -124,24 +130,14 @@ class App extends React.Component {
   goSearch(){
       console.log('submiittt');
       this.setState(state => ({
-        showSearchLocation: !state.showSearchLocation
+        showSearchLocation: true
+        //showSearchLocation: !state.showSearchLocation
       }));
   }
 
-  /*
-  onSubmit = () => {
-    console.log("submit");
-    //return <Redirect  to="/SearchLocation/" /> 
-    return this.setState({ Redirect :  "/SearchLocation"})
- }
-
-  state = { Redirect: null };
-*/
+  
   render(){
     //<audio src={this.state.blobURL} controls="controls" />
-    if(this.state.Redirect){
-      return <Redirect to={this.state.Redirect} />
-    }
     return (
       <div className="App">
          {this.props.callApi}
@@ -155,7 +151,7 @@ class App extends React.Component {
           </h3>
 
           <SearchLocationPage pesq = {this.state.showSearchLocation}/>
-          <button onClick={this.goSearch}> {this.state.showSearchLocation}Pesquisar endereco!</button>
+          <button onClick={this.goSearch}> Introduzir endereco!</button>
 
         </header>
       </div>

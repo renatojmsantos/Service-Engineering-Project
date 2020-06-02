@@ -4,7 +4,6 @@ import AddressItem from './AddressItem';
 class AddressInput extends Component {
   constructor(props) {
     super(props);
-    this.handleChange = this.handleChange.bind(this);
   }
 
   handleChange(evt) {
@@ -13,13 +12,12 @@ class AddressInput extends Component {
 
   render() {
     return (
-
-      <div className="card"><div className="card-body">
-      <AddressItem label="Rua" id="street" value={this.props.street} onChange={this.handleChange} placeholder="" />
-      <AddressItem label="Cidade" id="city" value={this.props.city} onChange={this.handleChange} placeholder="" />
-      <AddressItem label="Código Postal" id="postalCode" value={this.props.postalCode} onChange={this.handleChange} placeholder="" />
-      <AddressItem label="País" id="country" value={this.props.country} onChange={this.handleChange} placeholder="" />
-      </div></div>
+      <div>
+        <AddressItem label="Rua" value={this.props.street}/>
+        <AddressItem label="Cidade" value={this.props.city}/>
+        <AddressItem label="Código Postal" value={this.props.postalCode}/>
+        <AddressItem label="País" value={this.props.country}/>
+      </div>
     );
   }
 }

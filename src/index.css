@@ -11,3 +11,23 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+form {
+  margin-top: 60px;
+  padding-top: 100px;
+}
+
+#erro{
+  color: red;
+  font-weight: bold;
+}
+
+#resultados{
+  font:15px;
+}
+
+#title{
+  padding-top: 30px;
+  font-size: 40px;
+  text-align:center;
+}

@@ -3,101 +3,64 @@ import AddressSuggest from './AddressSuggest';
 import AddressInput from './AddressInput';
 import axios from 'axios';
 import TranscribeFetch from './getTranscribeStatus';
-import { Route53Resolver } from 'aws-sdk';
 
-
-const API_KEY = 'tX1z9uiD44rPpVd1CGR_eG3VBZ4mubljw0ljaLFIaRQ';
-var textoTrans;
 
 class AddressForm extends Component {
   constructor(props) {
     super(props);
 
     this.state = this.getInitialState();
-     
-    // User has entered something in the address bar
-    this.onQuery = this.onQuery.bind(this);
-    // User has entered something in an address field
+    this.onSearch = this.onSearch.bind(this);
     this.onAddressChange = this.onAddressChange.bind(this);
-    // User has clicked the check button
     this.onCheck = this.onCheck.bind(this);
-    // User has clicked the clear button
-    this.onClear = this.onClear.bind(this);
-
-
   }
 
-  onQuery(evt) {
-    const query = evt.target.value;
+  onSearch(evt) {
+    const search = evt.target.value;
 
-    if (!query.length > 0) {
+    if (!search.length > 0) {
       this.setState(this.getInitialState());
       return;
     }
 
-    const self = this;
+    const sugestao = this;
     axios.get('https://autocomplete.geocoder.ls.hereapi.com/6.2/suggest.json',
       {'params': {
-        'query': query,
-        'apiKey': API_KEY,
-        'maxresults': 10, //10
+        'query': search,
+        'apiKey': 'tX1z9uiD44rPpVd1CGR_eG3VBZ4mubljw0ljaLFIaRQ',
+        'maxresults': 20, // nr de resultados relacionados com a palavras pesquisadas
       }}).then(function (response) {
+        console.log("sugestao");
           console.log(response);
           if (response.data.suggestions.length > 0) {
             const id = response.data.suggestions[0].locationId;
             const address = response.data.suggestions[0].address;
-            self.setState({
+            sugestao.setState({
               'address' : address,
-              'query' : query,
+              'query' : search,
               'locationId': id
             })
           } else {
-            const state = self.getInitialState();
-            self.setState(state);
+            const state = sugestao.getInitialState();
+            sugestao.setState(state);
           }
       });
   }
   
-  async componentDidMount() {
-    const url = "https://3xeam2g64j.execute-api.us-east-1.amazonaws.com/transcribe/transcribe";
-    const response = await fetch(url)
-    const data = await response.json();
-    console.log(data);
-    this.setState({ body: data.body })
-    console.log("### "+this.state.body);
-    textoTrans = this.state.body;
-}    
-/*
-  getText(){
-    let textTranscribe = this
-    axios.get('https://3xeam2g64j.execute-api.us-east-1.amazonaws.com/transcribe/transcribe'
-      ).then(function (response) {
-          textTranscribe = response.data.body;
-          console.log("llll "+textTranscribe); //right string
-          return response.data.body;
-      }).catch(function(error) {
-        console.log(error.response.data);
-      });
-    //console.log("trans..."+JSON.stringify(textTranscribe)); // object object
-    console.log("###...#"+textTranscribe);
-  }
-*/
-
   getInitialState() {
     //console.log(this.getText());
-    let textTranscribe = this
+    var textTranscribe = this
     axios.get('https://3xeam2g64j.execute-api.us-east-1.amazonaws.com/transcribe/transcribe'
       ).then(function (response) {
           textTranscribe = response.data.body;
-          console.log("llll "+textTranscribe); //right string
-          
-
+          console.log("llll "+textTranscribe); // string bem...
       });
     //console.log("trans..."+JSON.stringify(textTranscribe)); // object object
-  
+    console.log("----- transcribe ------");
+    console.log(textTranscribe);
     return {
       'address': {
-        'street': JSON.stringify(textTranscribe.toString()), //white white, //inserir aqui texto do transcribe
+        'street': '',//textTranscribe.toString(), //white white, //inserir aqui texto do transcribe
         'city': '',
         'postalCode': '',
         'country': ''
@@ -106,13 +69,9 @@ class AddressForm extends Component {
       'locationId': '',
       'isChecked': false,
       'coords': {},
+      'currentCoors':{},
+      'viagem':{},
     }
-    
-  }
-
-  onClear(evt) {
-    const state = this.getInitialState();
-    this.setState(state);
   }
 
   onAddressChange(evt) {
@@ -125,93 +84,123 @@ class AddressForm extends Component {
   }
 
   onCheck(evt) {
-    let params = {
-        'apiKey': API_KEY,
-    }
+    // --------------------------------------—————---
+    // -------- CHECK ADDRESS AND ROUTE -------------
+    // --------------------------------------—————---
 
-    if (this.state.locationId.length > 0) {
-      params['locationId'] = this.state.locationId;
-    } else {
-      params['searchtext'] = 
-        //this.state.body
-        this.state.address.street
-        + this.state.address.city
-        + this.state.address.postalCode
-        + this.state.address.country;
-    }
-
-    // -----------------------------------------
-    // ------------- CHECK ADDRESS -------------
-    // -----------------------------------------
-
-    const self = this;
+    const place = this;
     axios.get('https://geocoder.ls.hereapi.com/6.2/geocode.json',
-      {'params': params }
-      ).then(function (response) {
+      {'params': {
+        'apiKey': 'tX1z9uiD44rPpVd1CGR_eG3VBZ4mubljw0ljaLFIaRQ',
+        'searchtext': this.state.address.street + this.state.address.city + this.state.address.postalCode + this.state.address.country,
+      }}).then(function (response) {
+        console.log("validar");
         console.log(response);
         const view = response.data.Response.View
-        if (view.length > 0 && view[0].Result.length > 0) {
-          const location = view[0].Result[0].Location;
+        const location = view[0].Result[0].Location;
 
-          self.setState({
-            'isChecked': 'true',
-            'locationId': '',
-            'query': location.Address.Label,
-            'address': {
-              'street': location.Address.HouseNumber + ' ' + location.Address.Street,
-              'city': location.Address.City,
-              'postalCode': location.Address.PostalCode,
-              'country': location.Address.Country
-            },
-            'coords': {
-              'lat': location.DisplayPosition.Latitude,
-              'lon': location.DisplayPosition.Longitude
-            }
-          });
-        } else {
-          self.setState({
-            'isChecked': true,
-            'coords': null,
-          })
-        }
-
+        place.setState({
+          'isChecked': 'true',
+          'locationId': '',
+          'query': location.Address.Label,
+          'address': {
+            'street': location.Address.Street,
+            'city': location.Address.City,
+            'postalCode': location.Address.PostalCode,
+            'country': location.Address.Country
+          },
+          'coordsDestino': {
+            'latitude': location.DisplayPosition.Latitude,
+            'longitude': location.DisplayPosition.Longitude
+          }
+        })
       })
-      .catch(function (error) {
-        console.log('caught failed query');
-        self.setState({
-          'isChecked': true,
-          'coords': null,
-        });
+      
+    // localizacao atual
+    const current = this;
+    navigator.geolocation.getCurrentPosition(function(position) {
+      current.setState({
+        'currentCoors':{
+          'latitude': position.coords.latitude,
+          'longitude': position.coords.longitude,
+        }
       });
+    });
+
+    //console.log("teste latitude");
+    //console.log(this.setState.currentCoors.latitude);
   }
 
-  alert() {
+  verificaEndereco() {
     if (!this.state.isChecked) {
       return;
     }
+    //console.log("##Latitude is :", this.state.currentCoors.latitude);
+    //console.log("$$$Longitude is :", this.state.currentCoors.longitude);
+    //console.log("###Distancia", this.state.viagem.distance);
+    //console.log("###Tempo", this.state.viagem.travelTime);
 
-    if (this.state.coords === null) {
+    if (this.state.coordsDestino === null) {
       return (
-        <div className="alert alert-warning" role="alert">
-          <b>Enderenço inválido!</b> 
+        <div id="erro">
+          Enderenço inválido!
         </div>
       );
     } else {
+          // request route
+          const simpleRoute = this;
+          axios.get('https://route.ls.hereapi.com/routing/7.2/calculateroute.json',
+            {'params': {
+              'apiKey': 'tX1z9uiD44rPpVd1CGR_eG3VBZ4mubljw0ljaLFIaRQ',
+              'waypoint0': this.state.currentCoors.latitude+','+this.state.currentCoors.latitude,
+              'waypoint1': this.state.coordsDestino.latitude+','+this.state.coordsDestino.longitude,
+              //'mode': 'fastest;car;traffic:enabled',
+              'mode': 'shortest;car;traffic:enabled',
+            }}).then(result => {
+              console.log("request route");
+              console.log(result.data);
+              console.log("distancia e tempo");
+              console.log(result.data.response.route[0].summary.distance);
+              console.log(result.data.response.route[0].summary.travelTime);
+
+              //console.log("teste latitude");
+              //console.log(this.setState.currentCoors.latitude);
+
+              const rota = result.data.response.route[0].summary;
+              var precoV = (rota.distance/10000) * 0.70 + (rota.travelTime/60/60) * 0.30;
+              simpleRoute.setState({
+                'viagem':{
+                  'distance': rota.distance/10000,
+                  'travelTime': rota.travelTime/60/60,
+                  'preco': precoV,
+                }
+              })
+              },error => {
+                console.error(error);
+              });
+
       return (
-        <div className="alert alert-success" role="alert">
-         Coordenadas: {this.state.coords.lat}, {this.state.coords.lon}.
+        <div id="resultados">
+         Coordenadas Atuais: {this.state.currentCoors.latitude}, {this.state.currentCoors.longitude}
+         <br></br>
+         Coordenadas Destino: {this.state.coordsDestino.latitude}, {this.state.coordsDestino.longitude}
+         <br></br>
+          Distancia: {this.state.viagem.distance} km
+          <br></br>
+          Tempo: {this.state.viagem.travelTime} min<br></br>
+          Preço: {this.state.viagem.preco} €
         </div>
       );
     }
   }
 
   render() {
-    let result = this.alert();
+    var verifyAdress = this.verificaEndereco();
     return (
-        <div className="container">
+        <div>
           <AddressSuggest
-            query={this.state.query} //text
-            onChange={this.onQuery} 
+            search={this.state.query} //text
+            onChange={this.onSearch} 
             />
           <AddressInput
             street={this.state.address.street}
@@ -221,9 +210,8 @@ class AddressForm extends Component {
             onChange={this.onAddressChange}
             />
           <br/>
-          { result }
-          <button type="submit" className="btn btn-primary" onClick={this.onCheck}>Check</button>
-          <button type="submit" className="btn btn-outline-secondary" onClick={this.onClear}>Clear</button>
+          {verifyAdress}
+          <button type="submit" onClick={this.onCheck}>Ver preço!</button>
         </div>
       );
   }
