@@ -1,9 +1,7 @@
 import React from 'react';
 import TranscribeData from './getTranscribeData'
 
-
 class TranscribeFetch extends React.Component {
-
     constructor(props){
         super(props);
         this.state = {
@@ -50,10 +48,6 @@ class TranscribeFetch extends React.Component {
             </div>
         )
     }
-    
 }
-    
-
 
 export default TranscribeFetch;
-

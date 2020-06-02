@@ -14,12 +14,13 @@ class TranscribeData extends React.Component {
         const data = await response.json();
         console.log(data);
         this.setState({ body: data.body })
+        //console.log("--->"+this.state.body);
     }    
 
     render() {
         return (
             <div>
-                {this.state.body}
+                 {this.state.body}
             </div>
         )
     }

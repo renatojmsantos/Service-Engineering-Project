@@ -2,15 +2,19 @@ import React, { Component } from 'react';
 import AddressSuggest from './AddressSuggest';
 import AddressInput from './AddressInput';
 import axios from 'axios';
+import TranscribeFetch from './getTranscribeStatus';
+import { Route53Resolver } from 'aws-sdk';
+
 
 const API_KEY = 'tX1z9uiD44rPpVd1CGR_eG3VBZ4mubljw0ljaLFIaRQ';
+var textoTrans;
 
 class AddressForm extends Component {
   constructor(props) {
     super(props);
 
     this.state = this.getInitialState();
-
+     
     // User has entered something in the address bar
     this.onQuery = this.onQuery.bind(this);
     // User has entered something in an address field
@@ -19,6 +23,8 @@ class AddressForm extends Component {
     this.onCheck = this.onCheck.bind(this);
     // User has clicked the clear button
     this.onClear = this.onClear.bind(this);
+
+
   }
 
   onQuery(evt) {
@@ -51,11 +57,47 @@ class AddressForm extends Component {
           }
       });
   }
+  
+  async componentDidMount() {
+    const url = "https://3xeam2g64j.execute-api.us-east-1.amazonaws.com/transcribe/transcribe";
+    const response = await fetch(url)
+    const data = await response.json();
+    console.log(data);
+    this.setState({ body: data.body })
+    console.log("### "+this.state.body);
+    textoTrans = this.state.body;
+}    
+/*
+  getText(){
+    let textTranscribe = this
+    axios.get('https://3xeam2g64j.execute-api.us-east-1.amazonaws.com/transcribe/transcribe'
+      ).then(function (response) {
+          textTranscribe = response.data.body;
+          console.log("llll "+textTranscribe); //right string
+          return response.data.body;
+      }).catch(function(error) {
+        console.log(error.response.data);
+      });
+    //console.log("trans..."+JSON.stringify(textTranscribe)); // object object
+    console.log("###...#"+textTranscribe);
+  }
+*/
 
   getInitialState() {
+    //console.log(this.getText());
+    let textTranscribe = this
+    axios.get('https://3xeam2g64j.execute-api.us-east-1.amazonaws.com/transcribe/transcribe'
+      ).then(function (response) {
+          textTranscribe = response.data.body;
+          console.log("llll "+textTranscribe); //right string
+          
+
+      });
+    //console.log("trans..."+JSON.stringify(textTranscribe)); // object object
+  
     return {
       'address': {
-        'street': '',
+        'street': JSON.stringify(textTranscribe.toString()), //white white, //inserir aqui texto do transcribe
         'city': '',
         'postalCode': '',
         'country': ''
@@ -63,8 +105,9 @@ class AddressForm extends Component {
       'query': '',
       'locationId': '',
       'isChecked': false,
-      'coords': {}
+      'coords': {},
     }
+    
   }
 
   onClear(evt) {
@@ -89,7 +132,9 @@ class AddressForm extends Component {
     if (this.state.locationId.length > 0) {
       params['locationId'] = this.state.locationId;
     } else {
-      params['searchtext'] = this.state.address.street
+      params['searchtext'] = 
+        //this.state.body
+        this.state.address.street
         + this.state.address.city
         + this.state.address.postalCode
         + this.state.address.country;

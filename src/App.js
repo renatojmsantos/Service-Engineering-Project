@@ -37,7 +37,6 @@ function SearchLocationPage(props) {
   }
   return (
     <div className="container">
-      Insira o seu destino...
       <AddressForm/>
     </div>
   );
@@ -111,7 +110,7 @@ class App extends React.Component {
 
     promise.then(
       function(data) {
-        sleep(3000).then(() => {
+        sleep(1000).then(() => {
           alert("Audio inserido para Transcriçao");
           window.location.reload(false);  
         })              
@@ -151,7 +150,7 @@ class App extends React.Component {
           <button onClick={this.stop} disabled={!this.state.isRecording}>Stop</button>
           
           <h3>
-            Resuts:
+            Transcrição:
             <TranscribeFetch />
           </h3>
 
