@@ -11,7 +11,6 @@ class AddressForm extends Component {
 
     this.state = this.getInitialState();
     this.onSearch = this.onSearch.bind(this);
-    this.onAddressChange = this.onAddressChange.bind(this);
     this.onCheck = this.onCheck.bind(this);
   }
 
@@ -37,7 +36,6 @@ class AddressForm extends Component {
             const address = response.data.suggestions[0].address;
             sugestao.setState({
               'address' : address,
-              'query' : search,
               'locationId': id
             })
           } else {
@@ -53,7 +51,7 @@ class AddressForm extends Component {
     axios.get('https://3xeam2g64j.execute-api.us-east-1.amazonaws.com/transcribe/transcribe'
       ).then(function (response) {
           textTranscribe = response.data.body;
-          console.log("llll "+textTranscribe); // string bem...
+          console.log("transcrito... = "+textTranscribe); // string bem...
       });
     //console.log("trans..."+JSON.stringify(textTranscribe)); // object object
     console.log("----- transcribe ------");
@@ -65,7 +63,6 @@ class AddressForm extends Component {
         'postalCode': '',
         'country': ''
       },
-      'query': '',
       'locationId': '',
       'isChecked': false,
       'coords': {},
@@ -78,7 +75,7 @@ class AddressForm extends Component {
     const id = evt.target.id
     const val = evt.target.value
 
-    let state = this.state
+    var state = this.state
     state.address[id] = val;
     this.setState(state);
   }
@@ -96,9 +93,8 @@ class AddressForm extends Component {
       }}).then(function (response) {
         console.log("validar");
         console.log(response);
-        const view = response.data.Response.View
-        const location = view[0].Result[0].Location;
 
+        const location = response.data.Response.View[0].Result[0].Location;
         place.setState({
           'isChecked': 'true',
           'locationId': '',
@@ -152,7 +148,7 @@ class AddressForm extends Component {
           axios.get('https://route.ls.hereapi.com/routing/7.2/calculateroute.json',
             {'params': {
               'apiKey': 'tX1z9uiD44rPpVd1CGR_eG3VBZ4mubljw0ljaLFIaRQ',
-              'waypoint0': this.state.currentCoors.latitude+','+this.state.currentCoors.latitude,
+              'waypoint0': this.state.currentCoors.latitude+','+this.state.currentCoors.longitude,
               'waypoint1': this.state.coordsDestino.latitude+','+this.state.coordsDestino.longitude,
               //'mode': 'fastest;car;traffic:enabled',
               'mode': 'shortest;car;traffic:enabled',
@@ -167,11 +163,11 @@ class AddressForm extends Component {
               //console.log(this.setState.currentCoors.latitude);
 
               const rota = result.data.response.route[0].summary;
-              var precoV = (rota.distance/10000) * 0.70 + (rota.travelTime/60/60) * 0.30;
+              var precoV = (rota.distance/1000) * 0.70 + (rota.travelTime/60/2) * 0.30;
               simpleRoute.setState({
                 'viagem':{
-                  'distance': rota.distance/10000,
-                  'travelTime': rota.travelTime/60/60,
+                  'distance': rota.distance/1000,
+                  'travelTime': rota.travelTime/60/2,
                   'preco': precoV,
                 }
               })
@@ -199,7 +195,7 @@ class AddressForm extends Component {
     return (
         <div>
           <AddressSuggest
-            search={this.state.query} //text
+            search={this.state.search} //text
             onChange={this.onSearch} 
             />
           <AddressInput

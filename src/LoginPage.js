@@ -20,7 +20,6 @@ class Login extends React.Component {
 
     render () {
         return (
-           
             <form align="center">
                 <h1>ES - Project #2</h1>
                 Login <input type="text" value={this.state.login} onChange={this.handleLoginChange}/> <br/>

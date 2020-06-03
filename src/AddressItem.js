@@ -7,7 +7,7 @@ class AddressItem extends Component {
         <div>
             <label>{this.props.label}</label>
             <div>
-              <input type="text" defaultValue={this.props.value} onChange={this.props.onChange}/>
+              <input defaultValue={this.props.value} onChange={this.props.onChange}/>
             </div>
         </div>
       );
