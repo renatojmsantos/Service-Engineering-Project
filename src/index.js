@@ -25,7 +25,7 @@ function Routes(){
 }
 */
 ReactDOM.render(
-    <LoginPage loginserver="https://4xfwd1debf.execute-api.us-east-1.amazonaws.com/test/login"/>,
+    <LoginPage loginserver="https://4xfwd1debf.execute-api.us-east-1.amazonaws.com/proj/login"/>,
     //<App />,
   document.getElementById('root')
 );

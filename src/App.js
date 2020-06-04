@@ -99,6 +99,7 @@ class App extends React.Component {
   }
 
   addAudio = (audio) => {
+    alert("Audio inserido para Transcriçao. Aguarde um pouco...");
     console.log(audio)
     var fileName = "audio.mp3";
     if(!audio.size) {
@@ -117,9 +118,8 @@ class App extends React.Component {
     
     promise.then(
       function(data) {
-        alert("Audio inserido para Transcriçao");
         sleep(3000).then(() => {
-          alert("Ja pode ir buscar a localização")
+          alert("Áudio inserido! Já pode ir buscar a localização.")
         })           
       },
       function(err) {
