@@ -49,6 +49,7 @@ class App extends React.Component {
       isRecording: false,
       blobURL: '',
       isBlocked: false,
+      aux: false,
     };
     this.state = {showSearchLocation: false};
     this.goSearch = this.goSearch.bind(this);
@@ -113,18 +114,19 @@ class App extends React.Component {
     });
 
     var promise = upload.promise();
-
+    
     promise.then(
       function(data) {
-        sleep(50).then(() => {
-          alert("Audio inserido para Transcriçao");
-          //window.location.reload(false);  
-        })              
+        alert("Audio inserido para Transcriçao");
+        sleep(3000).then(() => {
+          alert("Ja pode ir buscar a localização")
+        })           
       },
       function(err) {
         return alert("ERROR: ", err.message);
       }
     )
+    
   }
 
   goSearch(){
@@ -135,28 +137,49 @@ class App extends React.Component {
       }));
   }
 
-  
-  render(){
-    //<audio src={this.state.blobURL} controls="controls" />
-    return (
+
+  showTranscribe(){
+    this.setState({ aux: true });
+  }
+
+
+
+ render(){
+  if(!this.state.aux){
+    return (  
       <div className="App">
-         {this.props.callApi}
         <header className="App-header">
           <button onClick={this.start} disabled={this.state.isRecording}>Record</button>
-          <button onClick={this.stop} disabled={!this.state.isRecording}>Stop</button>
-          
+          <button onClick={this.stop} disabled={!this.state.isRecording}>Stop</button> 
+          <audio src={this.state.blobURL} controls="controls" />
           <h3>
-            Transcrição:
-            <TranscribeFetch />
+            <button onClick={this.showTranscribe.bind(this)}>Get Location</button>
           </h3>
-
-          <SearchLocationPage pesq = {this.state.showSearchLocation}/>
-          <button onClick={this.goSearch}> Introduzir endereco!</button>
-
         </header>
       </div>
     );
+  } else {
+    return(
+      <div className="App">
+        <header className="App-header">
+          <button onClick={this.start} disabled={this.state.isRecording}>Record</button>
+          <button onClick={this.stop} disabled={!this.state.isRecording}>Stop</button> 
+          <audio src={this.state.blobURL} controls="controls" />
+          <h3>
+            Results:
+            <TranscribeFetch />
+          </h3>
+          <h4>
+          <SearchLocationPage pesq = {this.state.showSearchLocation}/>
+           <button onClick={this.goSearch}> Introduzir endereco!</button>
+          </h4>
+        </header>
+      </div> 
+    )
+        
   }
+  
+}
  
 }
 
